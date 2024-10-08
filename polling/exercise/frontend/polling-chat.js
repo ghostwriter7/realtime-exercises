@@ -25,6 +25,19 @@ async function postNewMsg(user, text) {
   );
 }
 
+// async function getNewMsgs() {
+//   let json;
+//   try {
+//     const res = await fetch("/poll");
+//     json = await res.json();
+//   } catch (e) {
+//     console.error("polling error", e);
+//   }
+//   allChat = json.msg;
+//   render();
+//   setTimeout(getNewMsgs, INTERVAL);
+// }
+
 async function getNewMsgs() {
   let json;
   try {
@@ -35,7 +48,6 @@ async function getNewMsgs() {
   }
   allChat = json.msg;
   render();
-  setTimeout(getNewMsgs, INTERVAL);
 }
 
 function render() {
@@ -52,4 +64,17 @@ const template = (user, msg) =>
   `<li class="collection-item"><span class="badge">${user}</span>${msg}</li>`;
 
 // make the first request
-getNewMsgs();
+// getNewMsgs();
+
+let timeToMakeNextRequest = 0;
+
+async function timer(time) {
+  if (timeToMakeNextRequest <= time) {
+    await getNewMsgs();
+    timeToMakeNextRequest = time + INTERVAL;
+  }
+
+  requestAnimationFrame(timer);
+}
+
+requestAnimationFrame(timer)
